@@ -1,4 +1,102 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+from django.contrib.postgres.fields import ArrayField
+
+class User(AbstractUser):
+    email = models.EmailField(unique=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
+    house_ids = ArrayField(models.IntegerField(), blank=True, default=list)
+
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='ecox_users',
+        blank=True,
+        verbose_name='groups',
+        help_text='The groups this user belongs to.',
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='ecox_users',
+        blank=True,
+        verbose_name='user permissions',
+        help_text='Specific permissions for this user.',
+    )
+
+    class Meta:
+        db_table = 'users'
+        verbose_name = 'user'
+        verbose_name_plural = 'users'
+
+class House(models.Model):
+    house_id = models.AutoField(primary_key=True)
+    house_name = models.CharField(max_length=255)
+    address = models.TextField()
+    username = models.ForeignKey('Ecox.user', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    room_count = models.IntegerField(default=0)
+    device_count = models.IntegerField(default=0)
+    room_ids = ArrayField(models.IntegerField(), blank=True, default=list)
+
+    class Meta:
+        db_table = 'houses'
+
+class Room(models.Model):
+    room_id = models.AutoField(primary_key=True)
+    room_name = models.CharField(max_length=255)
+    house = models.ForeignKey(House, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    device_count = models.IntegerField(default=0)
+    device_ids = ArrayField(models.IntegerField(), blank=True, default=list)
+
+    class Meta:
+        db_table = 'rooms'
+
+class Device(models.Model):
+    device_id = models.AutoField(primary_key=True)
+    device_type = models.CharField(max_length=50)
+    state = models.BooleanField(default=False)
+    power = models.FloatField(default=0)
+    status = models.CharField(max_length=50, default='offline')
+    last_updated = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    schedule_enabled = models.BooleanField(default=False)
+    schedule = models.JSONField(null=True, blank=True)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'devices'
+
+class DeviceUsage(models.Model):
+    device = models.ForeignKey(Device, on_delete=models.CASCADE)
+    current = models.FloatField()
+    voltage = models.FloatField()
+    wattage = models.FloatField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'device_usage'
+
+class RoomUsage(models.Model):
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    total_current = models.FloatField()
+    total_voltage = models.FloatField()
+    total_wattage = models.FloatField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'room_usage'
+
+class HouseUsage(models.Model):
+    house = models.ForeignKey(House, on_delete=models.CASCADE)
+    total_current = models.FloatField()
+    total_voltage = models.FloatField()
+    total_wattage = models.FloatField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'house_usage'
 
 class EnergyUsage(models.Model):
     current = models.FloatField(help_text="The current (in Amps) of the energy usage measurement")
