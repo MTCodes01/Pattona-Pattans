@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from . import models
+from Ecox.models import Device, DeviceUsage, Room
 import datetime
 
 # Class for Initializing Hardware Connection
@@ -21,29 +22,55 @@ class HardwareInitializationAPI(APIView):
 class RealTimeDataAPI(APIView):
     def post(self, request):
         data = request.data  # Expecting {device_id, current, voltage, wattage}
+
         try:
-            device = models.Device.objects.get(device_id=data['device_id'])
-            
+            # Try to get the device
+            device = Device.objects.get(device_id=data['device_id'])
+
             # Update device status
             device.power = data['wattage']
             device.status = 'online'
-            device.last_updated = datetime.now()
+            device.last_updated = datetime.datetime.now()
             device.save()
-            
+
             # Create device usage record
-            models.DeviceUsage.objects.create(
-                device=device,
+            models.RealTimeData.objects.create(
+                device_id=device.device_id,
                 current=data['current'],
                 voltage=data['voltage'],
                 wattage=data['wattage']
             )
-            
+
             return Response({'message': 'Data recorded successfully'}, status=status.HTTP_201_CREATED)
-        except models.Device.DoesNotExist:
-            return Response({'error': 'Device not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        except Device.DoesNotExist:
+            # Device not found, initialize it
+            # NOTE: Adjust defaults as needed (e.g., device_type, room, etc.)
+            default_room = Room.objects.first()  # Assign first room as default
+            if not default_room:
+                return Response({'error': 'No rooms available to assign a new device'}, status=status.HTTP_400_BAD_REQUEST)
+
+            device = Device.objects.create(
+                device_id=data['device_id'],
+                device_type='unknown',  # Replace 'unknown' with actual default type if applicable
+                room=default_room,      # Assign the default room
+                power=data['wattage'],  # Use wattage from request data
+                status='online',
+                schedule_enabled=False,
+            )
+
+            # Create device usage record for the new device
+            models.RealTimeData.objects.create(
+                device_id=device.device_id,
+                current=data['current'],
+                voltage=data['voltage'],
+                wattage=data['wattage']
+            )
+
+            return Response({'message': 'Device initialized and data recorded'}, status=status.HTTP_201_CREATED)
+
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
 
 # Class for Retrieving Historical Sensor Data
 class HistoricalDataAPI(APIView):

@@ -3,6 +3,8 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('initialize/', views.InitializationAPI.as_view(), name='initialize'),
+    path('database/', views.DatabaseExplorerAPI.as_view(), name='database-explorer'),
     path('usage/', views.UsageAPI.as_view(), name='usage'),
     path('switch/', views.SwitchAPI.as_view(), name='switch'),
     path('device-status/', views.DeviceStatusAPI.as_view(), name='device_status'),

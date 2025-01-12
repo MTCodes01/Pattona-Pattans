@@ -31,7 +31,7 @@ class House(models.Model):
     house_id = models.AutoField(primary_key=True)
     house_name = models.CharField(max_length=255)
     address = models.TextField()
-    username = models.ForeignKey('Ecox.user', on_delete=models.CASCADE)
+    username = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     room_count = models.IntegerField(default=0)
@@ -104,19 +104,34 @@ class EnergyUsage(models.Model):
     wattage = models.FloatField(help_text="The wattage (in Watts) of the energy usage measurement")
     time_count = models.IntegerField(help_text="The time count (in seconds) of the energy usage measurement")
 
+    class Meta:
+        db_table = 'energy_usage'
+
 class Switch(models.Model):
     state = models.BooleanField(default=False, help_text="The current state of the switch (ON/OFF)")
     power_controls = models.CharField(max_length=15, help_text="The power control settings of the switch (e.g., 'dim' or 'bright')")
+
+    class Meta:
+        db_table = 'switches'
 
 class DeviceStatus(models.Model):
     device_id = models.IntegerField()
     status = models.CharField(max_length=15)
 
+    class Meta:
+        db_table = 'devicestatus'
+
 class Notification(models.Model):
     alert_type = models.CharField(max_length=15)
     message = models.CharField(max_length=255)
 
+    class Meta:
+        db_table = 'notifications'
+
 class Schedule(models.Model):
     time = models.TimeField()
     action = models.CharField(max_length=15)
+
+    class Meta:
+        db_table = 'schedules'
 
