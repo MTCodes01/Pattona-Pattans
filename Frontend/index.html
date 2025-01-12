@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecox - Sign Up</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                        url("login_bg.jpeg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        form {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #00CED1;
+            font-weight: bold;
+            font-size: 42px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .form-group {
+            width: 100%;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: white;
+            text-transform: uppercase;
+            font-weight: 500;
+            font-size: 13px;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 0 15px;
+            border: none;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            background: white;
+        }
+
+        button {
+            background: #32CD32;
+            height: 45px;
+            width: 200px;
+            border-radius: 8px;
+            border: none;
+            margin-top: 20px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background: #2AB02A;
+        }
+
+        .login-link {
+            margin-top: 25px;
+            color: white;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .login-link a {
+            color: #00CED1;
+            text-decoration: none;
+            margin-left: 5px;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .error {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            form {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <form id="signupForm">
+        <h1>SIGN UP</h1>
+        
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="username" placeholder="Enter your username">
+            <div id="usernameError" class="error"></div>
+        </div>
+        
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="email" placeholder="Enter your email">
+            <div id="emailError" class="error"></div>
+        </div>
+        
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Enter your password">
+            <div id="passwordError" class="error"></div>
+        </div>
+        
+        <div class="form-group">
+            <label>Confirm Password</label>
+            <input type="password" id="confirmPassword" placeholder="Confirm your password">
+            <div id="confirmPasswordError" class="error"></div>
+        </div>
+        
+        <button type="submit">Sign Up</button>
+        
+        <div class="login-link">
+            Already have an account?<a href="#">Login here</a>
+        </div>
+    </form>
+
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Reset errors
+            document.querySelectorAll('.error').forEach(error => {
+                error.style.display = 'none';
+            });
+
+            // Get form values
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            let isValid = true;
+
+            // Username validation
+            if (username.length < 3) {
+                document.getElementById('usernameError').textContent = 'Username must be at least 3 characters long';
+                document.getElementById('usernameError').style.display = 'block';
+                isValid = false;
+            }
+
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                document.getElementById('emailError').textContent = 'Please enter a valid email address';
+                document.getElementById('emailError').style.display = 'block';
+                isValid = false;
+            }
+
+            // Password validation
+            if (password.length < 6) {
+                document.getElementById('passwordError').textContent = 'Password must be at least 6 characters long';
+                document.getElementById('passwordError').style.display = 'block';
+                isValid = false;
+            }
+
+            // Confirm password validation
+            if (password !== confirmPassword) {
+                document.getElementById('confirmPasswordError').textContent = 'Passwords do not match';
+                document.getElementById('confirmPasswordError').style.display = 'block';
+                isValid = false;
+            }
+
+            if (isValid) {
+                // Here you would typically send the data to your server
+                console.log('Form is valid, ready to submit');
+                alert('Sign up successful!');
+                // Optionally redirect to login page
+                // window.location.href = 'login.html';
+            }
+        });
+    </script>
+</body>
+</html>
