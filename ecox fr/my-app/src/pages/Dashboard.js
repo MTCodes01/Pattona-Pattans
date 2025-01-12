@@ -1,40 +1,53 @@
 import React, { useState, useEffect } from "react";
 import "./Dashboard.css";
 import EnergyLineChart from "../components/EnergyLineChart";
-
-const initialData = [
-  {
-    name: "Home",
-    type: "Home",
-    children: [
-      {
-        name: "Room1",
-        type: "Room",
-        children: [
-          { name: "Bulb1", type: "Bulb", status: "Off", schedule: [] },
-          { name: "Fan1", type: "Fan", status: "On", schedule: [] },
-        ],
-      },
-      {
-        name: "Room2",
-        type: "Room",
-        children: [
-          { name: "Light1", type: "Light", status: "Off", schedule: [] },
-          { name: "AC1", type: "AC", status: "On", schedule: [] },
-        ],
-      },
-    ],
-  },
-];
+// import Home from "./Home";
 
 const Dashboard = () => {
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState([]); // Initialize with an empty array
   const [expandedNodes, setExpandedNodes] = useState([]);
   const [selectedNode, setSelectedNode] = useState("Home");
   const [newRoomName, setNewRoomName] = useState("");
   const [newDeviceName, setNewDeviceName] = useState({});
   const [energyUsageData, setEnergyUsageData] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  // Get the query string (e.g., "?username=test_user")
+  const queryString = window.location.search;
+
+  // Parse the query string
+  const urlParams = new URLSearchParams(queryString);
+
+  // Get the value of the 'username' parameter
+  const username = urlParams.get('username') || "MTyt";
+
+  console.log("Username:", username || "MTyt");
+
+  // Save the username in local storage
+  localStorage.setItem('username', username);
+
+  useEffect(() => {
+    const intervalId = setInterval(fetchHomeData, 1000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const fetchHomeData = async () => {
+    setLoading(true);
+    try {
+      const storedUsername = localStorage.getItem('username');
+
+      const response = await fetch(`http://Ecox/home/?user_id=${username || storedUsername}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch home data: ${response.statusText}`);
+      }
+      const homeData = await response.json();
+      setData(homeData); // Update the `data` state with fetched data
+    } catch (error) {
+      console.error("Error fetching home data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (selectedNode) {
@@ -113,7 +126,8 @@ const Dashboard = () => {
   };
 
   const addDevice = (roomName) => {
-    if (!newDeviceName[roomName] || newDeviceName[roomName].trim() === "") return;
+    if (!newDeviceName[roomName] || newDeviceName[roomName].trim() === "")
+      return;
 
     const updatedData = [...data];
 
@@ -259,7 +273,9 @@ const Dashboard = () => {
                 Devices:{" "}
                 {getRoomDetails(selectedNodeDetails).count || "No devices"}
               </p>
-              <p>Types: {getRoomDetails(selectedNodeDetails).types.join(", ")}</p>
+              <p>
+                Types: {getRoomDetails(selectedNodeDetails).types.join(", ")}
+              </p>
             </>
           )}
           {selectedNodeDetails && selectedNodeDetails.type !== "Room" && (
