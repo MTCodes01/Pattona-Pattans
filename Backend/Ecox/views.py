@@ -1,9 +1,11 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.shortcuts import render
-from . import models
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
+from . import models
 from django.db import connection
 
 
@@ -220,3 +222,26 @@ class SchedulesAPI(APIView):
 def index(request):
     return render(request, 'index.html')
 
+class LoginAPI(APIView):
+    def post(self, request):
+        credentials = request.data  # Expecting {'email', 'password'}
+        try:
+            user = authenticate(request, email=credentials['email'], password=credentials['password'])
+            if user is not None:
+                login(request, user)
+                return Response({'message': 'Login successful'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class SignupAPI(APIView):
+    def post(self, request):
+        user_data = request.data  # Expecting {email, password, first_name, last_name}
+        try:
+            user = models.User.objects.create_user(**user_data)
+            login(request, user)
+            return Response({'message': 'User created and logged in'}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
