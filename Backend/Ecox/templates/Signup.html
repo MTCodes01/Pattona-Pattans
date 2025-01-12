@@ -1,0 +1,149 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ecox - Sign Up</title>
+    <link rel="stylesheet" href="{% static 'signup_styles.css' %}" />
+    <meta name="csrf-token" content="{{ csrf_token }}" />
+  </head>
+  <body>
+    <form id="signupForm" action="/Ecox/signup/">
+      <h1>SIGN UP</h1>
+
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="username" placeholder="Enter your username" />
+        <div id="usernameError" class="error"></div>
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="Enter your email" />
+        <div id="emailError" class="error"></div>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input
+          type="password"
+          id="password"
+          placeholder="Enter your password"
+        />
+        <div id="passwordError" class="error"></div>
+      </div>
+
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          placeholder="Confirm your password"
+        />
+        <div id="confirmPasswordError" class="error"></div>
+      </div>
+
+      <button type="submit">Sign Up</button>
+
+      <div class="login-link">
+        Already have an account?<a href="/Ecox/login">Login here</a>
+      </div>
+    </form>
+
+    <script>
+      document
+        .getElementById("signupForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // Reset errors
+          document.querySelectorAll(".error").forEach((error) => {
+            error.style.display = "none";
+          });
+
+          // Get form values
+          const username = document.getElementById("username").value;
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+          const confirmPassword =
+            document.getElementById("confirmPassword").value;
+
+          let isValid = true;
+
+          // Username validation
+          if (username.length < 3) {
+            document.getElementById("usernameError").textContent =
+              "Username must be at least 3 characters long";
+            document.getElementById("usernameError").style.display = "block";
+            isValid = false;
+          }
+
+          // Email validation
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(email)) {
+            document.getElementById("emailError").textContent =
+              "Please enter a valid email address";
+            document.getElementById("emailError").style.display = "block";
+            isValid = false;
+          }
+
+          // Password validation
+          if (password.length < 6) {
+            document.getElementById("passwordError").textContent =
+              "Password must be at least 6 characters long";
+            document.getElementById("passwordError").style.display = "block";
+            isValid = false;
+          }
+
+          // Confirm password validation
+          if (password !== confirmPassword) {
+            document.getElementById("confirmPasswordError").textContent =
+              "Passwords do not match";
+            document.getElementById("confirmPasswordError").style.display =
+              "block";
+            isValid = false;
+          }
+
+          if (isValid) {
+            fetch("/Ecox/signup/", {
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCSRFToken(),
+              },
+              method: "POST",
+              body: JSON.stringify({
+                username: username,
+                email: email,
+                password: password,
+              }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                if (data.success) {
+                  alert("Sign up successful!");
+                  // Optionally redirect to login page
+                  // window.location.href = '/Ecox/login';
+                  window.location.href = "http://localhost:3000/";
+                } else {
+                  alert("Sign up failed: " + data.error);
+                }
+              })
+              .catch((error) => {
+                console.error("Error:", error);
+              });
+          }
+        });
+
+      function getCSRFToken() {
+        let csrfToken = null;
+        const cookies = document.cookie.split(";");
+        cookies.forEach((cookie) => {
+          const [name, value] = cookie.trim().split("=");
+          if (name === "csrftoken") csrfToken = value;
+        });
+        return csrfToken;
+      }
+    </script>
+  </body>
+</html>

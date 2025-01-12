@@ -7,6 +7,9 @@ from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
 from . import models
 from django.db import connection
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+import json
 
 
 class InitializationAPI(APIView):
@@ -222,26 +225,41 @@ class SchedulesAPI(APIView):
 def index(request):
     return render(request, 'index.html')
 
-class LoginAPI(APIView):
-    def post(self, request):
-        credentials = request.data  # Expecting {'email', 'password'}
-        try:
-            user = authenticate(request, email=credentials['email'], password=credentials['password'])
-            if user is not None:
-                login(request, user)
-                return Response({'message': 'Login successful'}, status=status.HTTP_200_OK)
-            else:
-                return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+@csrf_exempt
+def login(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+        
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            return JsonResponse({"success": "Login successful"}, status=200)
+        else:
+            return JsonResponse({"error": "Invalid credentials"}, status=400)
+    return render(request, 'login.html')
 
 
-class SignupAPI(APIView):
-    def post(self, request):
-        user_data = request.data  # Expecting {email, password, first_name, last_name}
+@csrf_exempt
+def signup(request):
+    if request.method == 'POST':
         try:
-            user = models.User.objects.create_user(**user_data)
-            login(request, user)
-            return Response({'message': 'User created and logged in'}, status=status.HTTP_201_CREATED)
+            data = json.loads(request.body)
+            username = data.get('username')
+            email = data.get('email')
+            password = data.get('password')
+
+            # Check if the username already exists
+            if models.User.objects.filter(username=username).exists():
+                return JsonResponse({"error": "Username already exists."}, status=400)
+
+            # Create a new user
+            user = models.User.objects.create_user(username=username, email=email, password=password)
+
+            return JsonResponse({"success": "User created successfully"}, status=201)
+
         except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            print(f"Error in signup view: {e}")
+            return JsonResponse({"error": "An error occurred during sign-up."}, status=500)
+    return render(request, 'Signup.html')
+

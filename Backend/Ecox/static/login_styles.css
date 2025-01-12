@@ -1,0 +1,123 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.login {
+    border: 1px solid black;
+    width: 1520px;
+    height: 715px;
+    background: url("./login_bg.jpeg");
+    color: white;
+    border-radius: 20px;
+    box-shadow: 0px 0px 20px rgba(0,0,0,0.75);
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+}
+
+form {
+    box-sizing: border-box;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: brightness(40%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.form-content {
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+h1 {
+    color: #00CED1;
+    font-weight: bold;
+    font-size: 50px;
+    text-shadow: 0px 0px 2px rgba(0,0,0,0.5);
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+label {
+    color: rgb(255,255,255);
+    text-transform: uppercase;
+    font-weight: normal;
+    font-size: 13px;
+    letter-spacing: 2px;
+    margin-left: 8px;
+}
+
+input {
+    background: rgb(255,255,255);
+    height: 40px;
+    width: 100%;
+    line-height: 40px;
+    border-radius: 20px;
+    padding: 0 20px;
+    border: none;
+    color: black;
+    font-size: 14px;
+}
+
+input::placeholder {
+    color: #999;
+}
+
+button {
+    background: #32CD32;
+    height: 40px;
+    width: 200px;
+    line-height: 40px;
+    border-radius: 40px;
+    border: none;
+    margin-top: 20px;
+    box-shadow: 0px 0px 5px rgba(0,0,0,0.3);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    align-self: center;
+}
+
+button:hover {
+    background: #28a428;
+}
+
+.signup {
+    margin-top: 25px;
+    color: white;
+    font-size: 14px;
+    text-align: center;
+}
+
+.signup a {
+    color: #00CED1;
+    text-decoration: none;
+    margin-left: 5px;
+}
+
+.signup a:hover {
+    text-shadow: #00CED1 0px 0px 5px;
+}

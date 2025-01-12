@@ -5,16 +5,23 @@ import "./Home.css"; // Import the CSS file
 function Home() {
   return (
     <div className="home-container">
+      <div className="bg"></div>
       {/* Header Section */}
       <header className="home-header">
         <h1>Welcome to Ecox</h1>
-        <p>Your all-in-one solution for monitoring and optimizing energy usage.</p>
+        <p>
+          Ecological Optimization Exchange
+        </p>
       </header>
 
       {/* Call-to-Action Buttons */}
       <div className="home-cta">
-        <Link to="/dashboard" className="home-button">Get Started</Link>
-        <Link to="/about" className="home-button-secondary">Learn More</Link>
+        <Link to="/dashboard" className="home-button">
+          Get Started
+        </Link>
+        <Link to="/about" className="home-button-secondary">
+          Learn More
+        </Link>
       </div>
 
       {/* Footer */}
