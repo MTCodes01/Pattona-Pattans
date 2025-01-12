@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./Dashboard.css";
 import EnergyLineChart from "../components/EnergyLineChart";
 // import Home from "./Home";
@@ -100,7 +100,6 @@ const Dashboard = () => {
         ? prev.filter((name) => name !== nodeName)
         : [...prev, nodeName]
     );
-    setSelectedNode(nodeName);
   };
 
   const addRoom = () => {
@@ -112,14 +111,12 @@ const Dashboard = () => {
     if (homeNode) {
       homeNode.children.push({
         name: newRoomName.trim(),
-        type: "Room",
         children: [],
       });
     }
 
     setData(updatedData);
     setNewRoomName("");
-
     if (!expandedNodes.includes("Home")) {
       setExpandedNodes((prev) => [...prev, "Home"]);
     }
@@ -138,8 +135,8 @@ const Dashboard = () => {
           node.children.push({
             name: newDeviceName[roomName].trim(),
             type: "Unknown",
-            status: "Off",
-            schedule: [],
+            energyUsage: [],
+            status: "off",
           });
           return true;
         }
@@ -152,12 +149,15 @@ const Dashboard = () => {
     setNewDeviceName((prev) => ({ ...prev, [roomName]: "" }));
   };
 
-  const toggleDeviceStatus = (deviceName) => {
+  const toggleDeviceStatus = () => {
+    if (!selectedDevice) return;
+
     const updateStatus = (nodes) => {
       return nodes.map((node) => {
-        if (node.name === deviceName) {
-          return { ...node, status: node.status === "On" ? "Off" : "On" };
-        } else if (node.children) {
+        if (node.name === selectedDevice.name) {
+          return { ...node, status: node.status === "on" ? "off" : "on" };
+        }
+        if (node.children) {
           return { ...node, children: updateStatus(node.children) };
         }
         return node;
@@ -165,6 +165,7 @@ const Dashboard = () => {
     };
 
     setData(updateStatus(data));
+    setSelectedDevice((prev) => ({ ...prev, status: prev.status === "on" ? "off" : "on" }));
   };
 
   const renderTree = (nodes) => {
@@ -174,12 +175,8 @@ const Dashboard = () => {
 
       return (
         <div key={node.name} className="tree-node">
-          <div className="tree-label">
-            <span
-              onClick={() =>
-                hasChildren ? toggleNode(node.name) : setSelectedNode(node.name)
-              }
-            >
+          <div className={`tree-label ${hasChildren ? "clickable" : ""}`}>
+            <span onClick={() => (hasChildren ? toggleNode(node.name) : setSelectedDevice(node))}>
               {node.name} {hasChildren && (isExpanded ? "-" : "+")}
             </span>
           </div>
@@ -193,10 +190,7 @@ const Dashboard = () => {
                   placeholder={`Add device to ${node.name}`}
                   value={newDeviceName[node.name] || ""}
                   onChange={(e) =>
-                    setNewDeviceName((prev) => ({
-                      ...prev,
-                      [node.name]: e.target.value,
-                    }))
+                    setNewDeviceName((prev) => ({ ...prev, [node.name]: e.target.value }))
                   }
                 />
                 <button onClick={() => addDevice(node.name)}>Add Device</button>
@@ -208,37 +202,15 @@ const Dashboard = () => {
     });
   };
 
-  const selectedNodeDetails = (() => {
-    const findNode = (nodes, name) => {
-      for (let node of nodes) {
-        if (node.name === name) return node;
-        if (node.children) {
-          const found = findNode(node.children, name);
-          if (found) return found;
-        }
-      }
-      return null;
-    };
-
-    return findNode(data, selectedNode);
-  })();
-
-  const getRoomDetails = (room) => {
-    if (!room || !room.children) return { count: 0, types: [] };
-
-    const types = room.children.map((device) => device.type);
-    return { count: room.children.length, types: [...new Set(types)] };
-  };
-
   return (
     <div className="dashboard">
       <h1>Energy Consumption Dashboard</h1>
 
       <div className="dashboard-container">
-        {/* Tree View */}
         <div className="tree-view">
           <h2>Devices</h2>
           {renderTree(data)}
+
           <div className="add-room">
             <input
               type="text"
@@ -250,45 +222,31 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Chart Section */}
-        <div className="chart-section">
-          {loading ? (
-            <p>Loading chart data...</p>
-          ) : energyUsageData.length > 0 ? (
-            <EnergyLineChart
-              data={energyUsageData}
-              title={`Energy Usage for ${selectedNode}`}
-            />
-          ) : (
-            <p>Select a node to view energy usage.</p>
+        <div className="info-box">
+          <h3>{selectedDevice ? selectedDevice.name : "Home"}</h3>
+          <p>
+            {selectedDevice
+              ? `Type: ${selectedDevice.type || "Unknown"}, Status: ${selectedDevice.status}`
+              : "View energy usage and device details here."}
+          </p>
+          {selectedDevice && (
+            <button onClick={toggleDeviceStatus} className="toggle-button">
+              {selectedDevice.status === "on" ? "Turn Off" : "Turn On"}
+            </button>
           )}
         </div>
 
-        {/* Info Box */}
-        <div className="info-box">
-          <h3>{selectedNode}</h3>
-          {selectedNodeDetails && selectedNodeDetails.type === "Room" && (
-            <>
-              <p>
-                Devices:{" "}
-                {getRoomDetails(selectedNodeDetails).count || "No devices"}
-              </p>
-              <p>
-                Types: {getRoomDetails(selectedNodeDetails).types.join(", ")}
-              </p>
-            </>
-          )}
-          {selectedNodeDetails && selectedNodeDetails.type !== "Room" && (
-            <>
-              <p>Type: {selectedNodeDetails.type}</p>
-              <p>Status: {selectedNodeDetails.status}</p>
-              <button
-                onClick={() => toggleDeviceStatus(selectedNode)}
-                className="status-toggle"
-              >
-                {selectedNodeDetails.status === "On" ? "Turn Off" : "Turn On"}
-              </button>
-            </>
+        <div className="chart-section">
+          {selectedDevice && selectedDevice.energyUsage ? (
+            <EnergyLineChart
+              data={selectedDevice.energyUsage.map((usage, index) => ({
+                time: `Hour ${index + 1}`,
+                usage,
+              }))}
+              title={`Energy Usage for ${selectedDevice.name}`}
+            />
+          ) : (
+            <p>Select a device to view energy usage.</p>
           )}
         </div>
       </div>
