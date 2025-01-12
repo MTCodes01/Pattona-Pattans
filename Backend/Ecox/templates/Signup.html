@@ -121,10 +121,15 @@
               .then((response) => response.json())
               .then((data) => {
                 if (data.success) {
-                  alert("Sign up successful!");
+                  // alert("Sign up successful!");
+                  // Save the username in a cookie
+                  // const d = new Date();
+                  // d.setTime(d.getTime() + (30 * 24 * 60 * 60 * 1000));
+                  // const expires = "expires=" + d.toUTCString();
+                  // document.cookie = "username=" + username + ";" + expires + ";path=/";
                   // Optionally redirect to login page
                   // window.location.href = '/Ecox/login';
-                  window.location.href = "http://localhost:3000/";
+                  window.location.href = "http://localhost:3000/?username=" + username;
                 } else {
                   alert("Sign up failed: " + data.error);
                 }

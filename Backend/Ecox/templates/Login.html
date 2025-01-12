@@ -54,8 +54,14 @@
             .then((response) => response.json())
             .then((data) => {
               if (data.success) {
-                alert("Login successful!");
-                window.location.href = "http://localhost:3000/";
+                // alert("Login successful!");
+                //Save the username in a cookie
+                // const d = new Date();
+                // d.setTime(d.getTime() + (30 * 24 * 60 * 60 * 1000));
+                // const expires = "expires=" + d.toUTCString();
+                // document.cookie = "username=" + username + ";" + expires + ";path=/";
+                // window.location.href = "/Ecox/home/";
+                window.location.href = "http://localhost:3000/?username=" + username;
               } else {
                 alert("Login failed: " + data.error);
               }
