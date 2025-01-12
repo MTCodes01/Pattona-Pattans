@@ -1,98 +1,35 @@
 import React, { useState } from "react";
 import "./Dashboard.css";
 import EnergyLineChart from "../components/EnergyLineChart";
-// import Home from "./Home";
+
+const initialData = [
+  {
+    name: "Home",
+    children: [
+      {
+        name: "Room1",
+        children: [
+          { name: "Bulb1", type: "Light", energyUsage: [12, 15, 10, 8], status: "off" },
+          { name: "Fan1", type: "Fan", energyUsage: [20, 25, 22, 18], status: "on" },
+        ],
+      },
+      {
+        name: "Room2",
+        children: [
+          { name: "Light1", type: "Light", energyUsage: [8, 10, 12, 9], status: "off" },
+          { name: "AC1", type: "AC", energyUsage: [50, 55, 52, 48], status: "on" },
+        ],
+      },
+    ],
+  },
+];
 
 const Dashboard = () => {
-  const [data, setData] = useState([]); // Initialize with an empty array
-  const [expandedNodes, setExpandedNodes] = useState([]);
-  const [selectedNode, setSelectedNode] = useState("Home");
+  const [data, setData] = useState(initialData);
+  const [expandedNodes, setExpandedNodes] = useState(["Home"]);
+  const [selectedDevice, setSelectedDevice] = useState(null);
   const [newRoomName, setNewRoomName] = useState("");
   const [newDeviceName, setNewDeviceName] = useState({});
-  const [energyUsageData, setEnergyUsageData] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  // Get the query string (e.g., "?username=test_user")
-  const queryString = window.location.search;
-
-  // Parse the query string
-  const urlParams = new URLSearchParams(queryString);
-
-  // Get the value of the 'username' parameter
-  const username = urlParams.get('username') || "MTyt";
-
-  console.log("Username:", username || "MTyt");
-
-  // Save the username in local storage
-  localStorage.setItem('username', username);
-
-  useEffect(() => {
-    const intervalId = setInterval(fetchHomeData, 1000);
-    return () => clearInterval(intervalId);
-  }, []);
-
-  const fetchHomeData = async () => {
-    setLoading(true);
-    try {
-      const storedUsername = localStorage.getItem('username');
-
-      const response = await fetch(`http://Ecox/home/?user_id=${username || storedUsername}`);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch home data: ${response.statusText}`);
-      }
-      const homeData = await response.json();
-      setData(homeData); // Update the `data` state with fetched data
-    } catch (error) {
-      console.error("Error fetching home data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (selectedNode) {
-      fetchEnergyUsageData(selectedNode);
-    }
-  }, [selectedNode]);
-
-  const fetchEnergyUsageData = async (nodeName) => {
-    setLoading(true);
-    try {
-      const simulatedData = {
-        Home: [
-          { time: "10:00", usage: 20 },
-          { time: "11:00", usage: 25 },
-          { time: "12:00", usage: 22 },
-        ],
-        Room1: [
-          { time: "10:00", usage: 8 },
-          { time: "11:00", usage: 10 },
-          { time: "12:00", usage: 12 },
-        ],
-        Room2: [
-          { time: "10:00", usage: 12 },
-          { time: "11:00", usage: 15 },
-          { time: "12:00", usage: 14 },
-        ],
-        Bulb1: [
-          { time: "10:00", usage: 1.5 },
-          { time: "11:00", usage: 1.8 },
-          { time: "12:00", usage: 1.3 },
-        ],
-        Fan1: [
-          { time: "10:00", usage: 2.5 },
-          { time: "11:00", usage: 2.8 },
-          { time: "12:00", usage: 3.0 },
-        ],
-      };
-
-      setEnergyUsageData(simulatedData[nodeName] || []);
-    } catch (error) {
-      console.error("Error fetching energy usage data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const toggleNode = (nodeName) => {
     setExpandedNodes((prev) =>
@@ -123,8 +60,7 @@ const Dashboard = () => {
   };
 
   const addDevice = (roomName) => {
-    if (!newDeviceName[roomName] || newDeviceName[roomName].trim() === "")
-      return;
+    if (!newDeviceName[roomName] || newDeviceName[roomName].trim() === "") return;
 
     const updatedData = [...data];
 
