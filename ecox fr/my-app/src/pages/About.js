@@ -4,6 +4,7 @@ import './About.css';
 const About = () => {
   return (
     <div className="about-container">
+       <div className="bg"></div>
       <h1>About the Energy Consumption Tracker</h1>
 
       <section className="problem-section">
