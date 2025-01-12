@@ -1,0 +1,69 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column; /* Stack content vertically */
+  }
+  
+  .navbar {
+    position: fixed; /* Keeps navbar at the top */
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    z-index: 1000; /* Ensures navbar stays on top */
+  }
+  
+  .home-container {
+    padding: 20px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centers content inside the container */
+    align-items: center; /* Centers content inside the container */
+    margin-top: 120px; /* Pushes content down to avoid overlap with the navbar */
+  }
+  
+  .home-header {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .home-cta {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .home-button {
+    text-decoration: none;
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .home-button-secondary {
+    text-decoration: none;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .home-footer {
+    margin-top: 180px;
+    display: none;
+    padding: 10px;
+    background-color: #f8f9fa;
+    color: #666;
+  }
+  

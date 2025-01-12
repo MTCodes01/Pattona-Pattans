@@ -1,0 +1,127 @@
+Methods Needed for Energy Tracker Project
+
+1. **Usage**
+   - **GET, POST**
+     - Data Points: Current, Voltage, Wattage, Time Count
+     - Purpose: Retrieve and update real-time energy usage statistics.
+       - `GET /usage`: Fetch real-time or historical energy consumption data.
+       - `POST /usage`: Submit new energy usage data from IoT sensors.
+
+2. **Switch**
+   - **GET, POST**
+     - Data Points: ON/OFF State, Power Controls (e.g., dim or bright settings)
+     - Purpose: Manage power states and control device power levels.
+       - `GET /switch`: Retrieve the current state (ON/OFF) and power level settings.
+       - `POST /switch`: Update the state or adjust the power control settings.
+
+3. **Device Status**
+   - **GET**
+     - Data Points: Device ID, Status (active/inactive, error states, etc.)
+     - Purpose: Monitor the operational status of connected devices.
+       - `GET /devices`: Retrieve a list of devices with their statuses.
+
+4. **Energy Analytics**
+   - **GET**
+     - Data Points: Historical energy usage, Peak usage times, Trends
+     - Purpose: Analyze historical energy data for insights.
+       - `GET /analytics`: Fetch analytics on energy consumption patterns.
+
+5. **Notifications**
+   - **GET, POST**
+     - Data Points: Alerts (e.g., excessive energy consumption, device malfunctions)
+     - Purpose: Set up or fetch notifications.
+       - `GET /notifications`: Retrieve all notifications.
+       - `POST /notifications`: Set new alert rules.
+
+6. **Energy Saving Modes**
+   - **GET, POST**
+     - Data Points: Mode (e.g., Eco, Performance), Schedule
+     - Purpose: Toggle between predefined modes for energy optimization.
+       - `GET /energy-mode`: Get the current mode and schedule.
+       - `POST /energy-mode`: Set or update energy-saving modes.
+
+7. **User Management**
+   - **GET, POST, DELETE**
+     - Data Points: User profiles, Roles, Permissions
+     - Purpose: Manage users and their access to the system.
+       - `GET /users`: List all users.
+       - `POST /users`: Add a new user.
+       - `DELETE /users/{user_id}`: Remove a user.
+
+8. **Schedules**
+   - **GET, POST, DELETE**
+     - Data Points: Time, Action (e.g., turn off, dim lights)
+     - Purpose: Automate device actions based on a schedule.
+       - `GET /schedules`: View all scheduled actions.
+       - `POST /schedules`: Add a new schedule.
+       - `DELETE /schedules/{schedule_id}`: Delete a schedule.
+
+9. **Device-Level Insights**
+   - **GET**
+     - Data Points: Individual Device Usage, Contribution to Total Consumption
+     - Purpose: Provide detailed device-level energy consumption breakdowns.
+       - `GET /device-insights/{device_id}`: Fetch detailed insights for a specific device.
+
+10. **Room-Level Energy Tracking**
+    - **GET**
+      - Data Points: Room ID, Room-Specific Usage, Suggested Adjustments
+      - Purpose: Enable users to optimize energy usage for specific rooms.
+        - `GET /room-insights/{room_id}`: Fetch energy data for a specific room.
+
+11. **Full-Floor Energy Tracking**
+    - **GET**
+      - Data Points: Floor ID, Total Usage, Trends
+      - Purpose: Track energy usage across an entire floor.
+        - `GET /floor-insights/{floor_id}`: Retrieve energy data for a full floor.
+
+12. **Full-Home Energy Tracking**
+    - **GET**
+      - Data Points: Home ID, Total Usage, Trends
+      - Purpose: Provide aggregated energy consumption insights for the whole home.
+        - `GET /home-insights`: Retrieve total energy data for the entire home.
+
+13. **Historical Data Export**
+    - **GET**
+      - Data Points: Time Period, Device/Room Selection
+      - Purpose: Enable users to export historical energy data for analysis.
+        - `GET /export-data`: Generate downloadable energy usage reports.
+
+===================================================================================================================
+
+Methods Needed for Hardware Data Retrieval in Energy Tracker Project
+
+1. **Initialize Hardware Connection**
+   - **POST**
+     - Data Points: Hardware ID, Connection Protocol (e.g., MQTT, HTTP), Initialization Parameters
+     - Purpose: Set up a connection with the hardware for data retrieval.
+       - `POST /hardware/init`: Establish a connection with the hardware device.
+
+2. **Retrieve Real-Time Sensor Data**
+   - **GET**
+     - Data Points: Sensor Type (e.g., Current, Voltage, Power), Device ID
+     - Purpose: Fetch real-time data from hardware sensors.
+       - `GET /hardware/sensors`: Retrieve data from connected sensors.
+
+3. **Retrieve Historical Sensor Data**
+   - **GET**
+     - Data Points: Device ID, Sensor Type, Time Range
+     - Purpose: Fetch historical sensor data for analysis.
+       - `GET /hardware/sensors/history`: Fetch stored historical data from hardware memory or backend.
+
+5. **Check Hardware Status**
+   - **GET**
+     - Data Points: Hardware ID, Status Type (e.g., Online/Offline, Battery Level)
+     - Purpose: Monitor the status of the hardware.
+       - `GET /hardware/status`: Retrieve the current operational status of the hardware.
+
+8. **Stream Data**
+   - **GET**
+     - Data Points: Device ID, Stream Type (e.g., live energy data, event logs)
+     - Purpose: Establish a live data stream from hardware to the backend.
+       - `GET /hardware/stream`: Open a data stream for live sensor readings.
+
+13. **Stop Hardware Connection**
+    - **POST**
+      - Data Points: Hardware ID
+      - Purpose: Terminate the connection with the hardware device.
+        - `POST /hardware/stop`: Safely disconnect the hardware from the system.
