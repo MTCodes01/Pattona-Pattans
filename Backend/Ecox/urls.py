@@ -5,7 +5,6 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('login/', views.login, name='login'),
     path('signup/', views.signup, name='signup'),
-    path('home/', views.HomeHierarchyAPI.as_view(), name='home'),
     path('initialize/', views.InitializationAPI.as_view(), name='initialize'),
     path('database/', views.DatabaseExplorerAPI.as_view(), name='database-explorer'),
     path('usage/', views.UsageAPI.as_view(), name='usage'),
